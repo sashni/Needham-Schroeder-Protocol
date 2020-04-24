@@ -21,21 +21,21 @@ kBS = Bob's server key
 (B -> A) : B, Nb
 
 ## Running the Code
-Begin by running two client consoles:<br>
+Begin by running two separate client consoles:<br>
 ``java client.Client``
 
-Entering a clientname:
+Enter a clientname:
 ``A`` or ``B``
 
-Then run the server:
+Logs will show transmitted messages, decrypted messages and established keys.
+Opting out of logs will only show transmitted messages (essentially the adversary view).<br>
+Choose whether or not to include logs.
+``true`` or ``false``
+
+Run the server:
 ``java server.Server``
 
-Logs will show transmitted messages, decrypted messages and established keys.
-Opting out of logs will only show transmitted messages (essentially the adversary view).
-Choose whether or not to include logs.
-``True`` or ``False``
-
-Once a session key is established, Alice and Bob can begin secure communication by encrypting messages.
+Once a session key is established, Alice and Bob can begin secure communication by encrypting messages.<br>
 A new initialization vector is generated for each round of messaging.
 
 Note: for every round of messages, Alice must enter a message first, then Bob.

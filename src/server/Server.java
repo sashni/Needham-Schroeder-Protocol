@@ -17,6 +17,7 @@ import java.util.Base64;
 public class Server {
     public static SecretKey keyAS;
     public static SecretKey keyBS;
+    public static boolean logs = true;
 
     public Server() throws Exception {
     }
@@ -26,6 +27,9 @@ public class Server {
 
         // Reading data using readLine
         Server S = new Server();
+        java.io.Console cnsl = System.console();
+        String log_choice = cnsl.readLine("Logs? (true/false) ");
+        logs = (log_choice.equals("false")) ? false : true;
         S.sendkeys();
         S.listen();
     }
@@ -39,16 +43,16 @@ public class Server {
         Socket socket = new Socket("localhost", 800);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         out.println(Base64.getEncoder().encodeToString(keyAS.getEncoded()));
-        System.out.println("Sending key AS: " +keyAS);
-        System.out.println(Base64.getEncoder().encodeToString(keyAS.getEncoded()));
+        if (logs==true) {System.out.println("Sending key AS: " +keyAS+"\n");};
+        if (logs==true) {System.out.println(Base64.getEncoder().encodeToString(keyAS.getEncoded())+"\n");};
         socket.close();
 
         //// Send key to B
         socket = new Socket("localhost", 801);
         out = new PrintWriter(socket.getOutputStream(), true);
-        System.out.println("Sending key BS: "+keyBS);
-        System.out.println(Base64.getEncoder().encodeToString(keyBS.getEncoded()));
         out.println(Base64.getEncoder().encodeToString(keyBS.getEncoded()));
+        if (logs==true){System.out.println("Sending key BS: "+keyBS+"\n");};
+        if (logs==true){System.out.println(Base64.getEncoder().encodeToString(keyBS.getEncoded())+"\n");};
         socket.close();
     }
 
@@ -73,7 +77,7 @@ public class Server {
         for (int i = 0; i < 4; i++) {
             message[i] = in.readLine();
         }
-        System.out.println("Message received (A->S): " + message[0] + message[1] + message[2] + message[3]);
+        System.out.println("Message received (A->S): " + message[0]+" " + message[1]+" " + message[2]+" " + message[3]+"\n");
         socketA.close();
         // Kab
         respond(message);
@@ -81,13 +85,11 @@ public class Server {
 
     public void respond(String[] message) throws Exception{
         String keyAB = generate_keyAB();
-        System.out.println("Nonces " + message[2]);
-        System.out.println("Nonces " + message[3]);
         String[] ct = encrypt_sk(keyAB, message[2], message[3]);
 
         Socket socket = new Socket("localhost", 1027);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        System.out.println("Sending ciphertext (S->A): " + ct[0] + ct[1] + ct[2]);
+        System.out.println("Sending ciphertext (S->A): " + ct[0] + ct[1] + ct[2]+"\n");
         out.println(ct[0]);
         out.println(ct[1]);
         out.println(ct[2]);
@@ -110,7 +112,7 @@ public class Server {
         SecureRandom srandom = new SecureRandom();
         srandom.nextBytes(iv);
         encoded[0] = Base64.getEncoder().encodeToString(iv);
-        System.out.println("IV: "+encoded[0]);
+        System.out.println("IV: "+encoded[0]+"\n");
         IvParameterSpec ivspec = new IvParameterSpec(iv);
 
         Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
